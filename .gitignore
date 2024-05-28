@@ -1,0 +1,5 @@
+pagerank
+__pycache__
+obj
+*.pyc
+.vscode/
