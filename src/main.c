@@ -11,6 +11,7 @@
 
 #include <stdlib.h>
 #include <getopt.h>
+#include "parser.h"
 
 void print_usage() {
     printf("Usage: ./pagerank [OPTIONS]... [FILENAME]\n");
@@ -24,23 +25,39 @@ void print_usage() {
 
 int main(int argc, char *argv[]) {
     int opt;
-    void rand_init();
-    while ((opt = getopt(argc, argv, "hr:m:sp:")) != -1) {
+    int stats_flag = 0;
+    char *filename = NULL;
+
+    while ((opt = getopt(argc, argv, "hs")) != -1) {
         switch (opt) {
             case 'h':
                 print_usage();
-                exit(EXIT_SUCCESS);
-            // Handle other flags here
+                return 0;
+            case 's':
+                stats_flag = 1;
+                break;
             default:
-                fprintf(stderr, "Usage: %s [-h] [-r N] [-m N] [-s] [-p P] [FILENAME]\n", argv[0]);
-                exit(EXIT_FAILURE);
+                print_usage();
+                return 1;
         }
     }
+
+    if (optind < argc) {
+        filename = argv[optind];
+    } else if (!stats_flag) {
+        fprintf(stderr, "Filename required\n");
+        print_usage();
+        return 1;
+    }
+
+    if (filename) {
+        Graph *graph = create_graph();
+        parse_dot_file(filename, graph);
+        if (stats_flag) {
+            print_graph_statastics(graph);
+        }
+        free_graph(graph);
+    }
+
     return 0;
 }
-
-
-  // initialize the random number generator
- 
-
-
