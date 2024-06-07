@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include "parser.h"
+#include "random.h"
 
 void print_usage() {
     printf("Usage: ./pagerank [OPTIONS]... [FILENAME]\n");
@@ -24,17 +25,27 @@ void print_usage() {
 }
 
 int main(int argc, char *argv[]) {
+    rand_init();
     int opt;
+    int random_steps;
     int stats_flag = 0;
+    
+    int p = 10; // Default value for p
     char *filename = NULL;
 
-    while ((opt = getopt(argc, argv, "hs")) != -1) {
+    while ((opt = getopt(argc, argv, "hr:msp")) != -1) {
         switch (opt) {
             case 'h':
                 print_usage();
                 return 0;
+            case 'r':
+                random_steps = optarg;
+                break;
             case 's':
                 stats_flag = 1;
+                break;
+            case 'p':
+                p = optarg;
                 break;
             default:
                 print_usage();
@@ -53,11 +64,18 @@ int main(int argc, char *argv[]) {
     if (filename) {
         Graph *graph = create_graph();
         parse_dot_file(filename, graph);
+
         if (stats_flag) {
-            print_graph_statastics(graph);
+            print_graph_stats(graph);
         }
+
+        if (random_steps > 0) {
+            simulate_random_surfer(graph, random_steps, p);
+        }
+
         free_graph(graph);
     }
 
     return 0;
 }
+
