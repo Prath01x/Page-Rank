@@ -1,5 +1,4 @@
 #include "parser.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -72,14 +71,9 @@ Node* find_or_create_node(Graph* graph, const char* name) {
     graph->nodes[graph->num_nodes++] = node;
     return node;
 }
-void print_graph_statastics(Graph* graph) {
-    int min_in_degree = MAX_NODES, max_in_degree = 0;
-    int min_out_degree = MAX_NODES, max_out_degree = 0;
-
-    if (graph->num_nodes == 0) {
-        min_in_degree = 0;
-        min_out_degree = 0;
-    }
+void print_graph_stats(Graph* graph) {
+    int min_in_degree = INT_MAX, max_in_degree = 0;
+    int min_out_degree = INT_MAX, max_out_degree = 0;
 
     for (int i = 0; i < graph->num_nodes; i++) {
         Node* node = graph->nodes[i];
@@ -89,11 +83,12 @@ void print_graph_statastics(Graph* graph) {
         if (node->out_degree > max_out_degree) max_out_degree = node->out_degree;
     }
 
-    printf("%s:\n", graph->name[0] ? graph->name : "Graph");
+    printf("%s:\n",graph->name);
     printf("- num nodes: %d\n", graph->num_nodes);
     printf("- num edges: %d\n", graph->num_edges);
-    printf("- indegree: %d-%d\n", min_in_degree, max_in_degree);
-    printf("- outdegree: %d-%d\n", min_out_degree, max_out_degree);
+    printf("- indegree: %d-%d\n", min_in_degree == INT_MAX ? 0 : min_in_degree, max_in_degree);
+    printf("- outdegree: %d-%d\n", min_out_degree == INT_MAX ? 0 : min_out_degree, max_out_degree);
+    
 }
 void free_graph(Graph *graph) {
     if (!graph) return;
