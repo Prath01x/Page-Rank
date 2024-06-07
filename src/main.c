@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
     int p = 10; // Default value for p
     char *filename = NULL;
 
-    while ((opt = getopt(argc, argv, "hr:msp")) != -1) {
+    while ((opt = getopt(argc, argv, "hrmsp")) != -1) {
         switch (opt) {
             case 'h':
                 print_usage();
