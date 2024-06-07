@@ -88,19 +88,19 @@ int main(int argc, char *argv[]) {
     int p = 10; // Default value for p
     char *filename = NULL;
 
-    while ((opt = getopt(argc, argv, "hrmsp")) != -1) {
+    while ((opt = getopt(argc, argv, "hr:sp:")) != -1) {
         switch (opt) {
             case 'h':
                 print_usage();
                 return 0;
             case 'r':
-                random_steps = optarg;
+                random_steps = atoi(optarg);
                 break;
             case 's':
                 stats_flag = 1;
                 break;
             case 'p':
-                p = optarg;
+                p = atoi(optarg);
                 break;
             default:
                 print_usage();
