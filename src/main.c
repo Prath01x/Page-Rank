@@ -24,7 +24,9 @@ void print_usage() {
     printf("  -p P      Set the parameter p to P%%. (Default: P = 10)\n");
 }
 void simulate_random_surfer(Graph *graph, int steps, int p) {
-    
+    if (graph->num_nodes == 0) {
+        return;
+    }
 
     // Initialize random starting node
     int current_node_index = randu(graph->num_nodes);

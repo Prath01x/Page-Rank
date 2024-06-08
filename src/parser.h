@@ -16,7 +16,7 @@ typedef struct Graph {
     int num_nodes;
     int num_edges;
 } Graph;
-;
+
 
 Graph* create_graph();
 Node* create_node(const char* name);
