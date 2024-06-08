@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
     int p = 10; // Default value for p
     char *filename = NULL;
 
-    while ((opt = getopt(argc, argv, "hr:sp:")) != -1) {
+    while ((opt = getopt(argc, argv, "hs")) != -1) {
         switch (opt) {
             case 'h':
                 print_usage();
@@ -126,13 +126,11 @@ int main(int argc, char *argv[]) {
             print_graph_stats(graph);
         }
 
-        if (random_steps > 0) {
-            simulate_random_surfer(graph, random_steps, p);
-        }
 
         free_graph(graph);
     }
 
     return 0;
+
 }
 
