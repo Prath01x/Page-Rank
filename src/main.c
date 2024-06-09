@@ -25,10 +25,11 @@ void print_usage() {
 }
 void simulate_random_surfer(Graph *graph, int steps, float p) {
     // Check if the graph has any nodes
+    rand_init();
      if (graph == NULL || graph->num_nodes == 0 || steps <= 0 || p < 0.0 || p > 1.0) {
         return;
     }
-     srand((unsigned int)time(NULL));
+    
     // Initialize random starting node
     int current_node_index = randu(graph->num_nodes);
     Node *current_node = graph->nodes[current_node_index];
@@ -76,7 +77,7 @@ void simulate_random_surfer(Graph *graph, int steps, float p) {
 
     // Output the results
     for (int i = 0; i < graph->num_nodes; i++) {
-        printf("%s: %.10f\n", graph->nodes[i]->name, (double)visit_counts[i] / steps);
+        printf("%-12s %.10f\n", graph->nodes[i]->name, (double)visit_counts[i] / steps);
     }
 
     free(visit_counts);
@@ -84,7 +85,7 @@ void simulate_random_surfer(Graph *graph, int steps, float p) {
 
 
 int main(int argc, char *argv[]) {
-    rand_init();
+    
     int opt;
     int random_steps;
     int stats_flag = 0;
@@ -104,7 +105,7 @@ int main(int argc, char *argv[]) {
                 stats_flag = 1;
                 break;
             case 'p':
-            p=atof(optarg)/100.0;
+            p=atoi(optarg)/100.0;
                 break;
             default:
                 print_usage();
@@ -127,7 +128,7 @@ int main(int argc, char *argv[]) {
             print_graph_stats(graph);
         }
 
-        if (random_steps > 0) {
+        else if (random_steps > 0) {
             simulate_random_surfer(graph, random_steps, p);
         }
 
