@@ -44,7 +44,7 @@ void simulate_random_surfer(Graph *graph, int steps, float p) {
     // Simulate the random surfer for the specified number of steps
     for (int i = 0; i < steps; i++) {
         // With probability p%, jump to a random node
-        if (randu(100)/ 100.0 < p) {
+        if (randu(RAND_MAX)/ RAND_MAX < p) {
             current_node_index = randu(graph->num_nodes);
             current_node = graph->nodes[current_node_index];
         } else if (current_node->out_degree > 0) {
