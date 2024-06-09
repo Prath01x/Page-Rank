@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
                 stats_flag = 1;
                 break;
             case 'p':
-            p=atod(optarg)/100.0;
+            p=atoi(optarg)/100.0;
                 break;
             default:
                 print_usage();
