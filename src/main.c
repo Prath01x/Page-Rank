@@ -23,8 +23,8 @@ void print_usage() {
     printf("  -s        Compute and print the statistics of the graph as defined in section 3.4\n");
     printf("  -p P      Set the parameter p to P%%. (Default: P = 10)\n");
 }
-void simulate_random_surfer(Graph *graph, int steps, double p) {
-    
+void simulate_random_surfer(Graph *graph, int steps, float p) {
+    rand_init();
 
     if (graph == NULL || graph->num_nodes == 0 || steps <= 0 || p < 0.0 || p > 1.0) {
         return;
@@ -41,7 +41,7 @@ void simulate_random_surfer(Graph *graph, int steps, double p) {
 
     for (int i = 0; i < steps; i++) {
  
-        if ((double)randu(RAND_MAX) / RAND_MAX < p || current_node->out_degree == 0) {
+        if (randu(RAND_MAX) / RAND_MAX < p || current_node->out_degree == 0) {
             current_node_index = randu(graph->num_nodes);
             current_node = graph->nodes[current_node_index];
         } else {
@@ -75,7 +75,7 @@ void simulate_random_surfer(Graph *graph, int steps, double p) {
     }
 
     for (int i = 0; i < graph->num_nodes; i++) {
-        printf("%-10s %.10f\n", graph->nodes[i]->name, (double)visit_counts[i] / steps);
+        printf("%s %.10f\n", graph->nodes[i]->name, (double)visit_counts[i] / steps);
     }
 
     free(visit_counts);
@@ -88,10 +88,10 @@ int main(int argc, char *argv[]) {
     int random_steps;
     int stats_flag = 0;
     
-    double p = 0.1; 
+    float p = 0.1; 
     char *filename = NULL;
 
-    while ((opt = getopt(argc, argv, "hr:sp:")) != -1) {
+    while ((opt = getopt(argc, argv, "hr:msp:")) != -1) {
         switch (opt) {
             case 'h':
                 print_usage();
@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
                 stats_flag = 1;
                 break;
             case 'p':
-            p=atoi(optarg)/100.0;
+            p=atof(optarg)/100.0;
                 break;
             default:
                 print_usage();
