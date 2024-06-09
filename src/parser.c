@@ -37,6 +37,9 @@ void parse_dot_file(const char* filename, Graph* graph) {
             src_node->out_degree++;
             tgt_node->in_degree++;
             graph->num_edges++;
+        }else {
+            fprintf(stderr, "Invalid line format: %s\n", line);
+            
         }
     }
 
