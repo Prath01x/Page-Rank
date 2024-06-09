@@ -41,7 +41,7 @@ void simulate_random_surfer(Graph *graph, int steps, double p) {
 
     for (int i = 0; i < steps; i++) {
  
-        if ((double)rand() / RAND_MAX < p || current_node->out_degree == 0) {
+        if ((double)randu(RAND_MAX) / RAND_MAX < p || current_node->out_degree == 0) {
             current_node_index = randu(graph->num_nodes);
             current_node = graph->nodes[current_node_index];
         } else {
@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
                 stats_flag = 1;
                 break;
             case 'p':
-            p=atoi(optarg)/100.0;
+            p=atod(optarg)/100.0;
                 break;
             default:
                 print_usage();
