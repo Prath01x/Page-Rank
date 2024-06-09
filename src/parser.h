@@ -22,6 +22,6 @@ Graph* create_graph();
 Node* create_node(const char* name);
 void print_graph_stats(Graph *graph);
 void free_graph(Graph *graph);
-void parse_dot_file(const char* filename, Graph* graph);
+int parse_dot_file(const char* filename, Graph* graph);
 Node* find_or_create_node(Graph* graph, const char* name);
 #endif

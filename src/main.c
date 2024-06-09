@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
                 stats_flag = 1;
                 break;
             case 'p':
-            p=atoi(optarg)/100.0;
+                p = atoi(optarg) / 100.0;
                 break;
             default:
                 print_usage();
@@ -122,16 +122,15 @@ int main(int argc, char *argv[]) {
 
     if (filename) {
         Graph *graph = create_graph();
-        parse_dot_file(filename, graph);
-        if(parse_dot_file == 1){
-            return 1;
+        int parse_result = parse_dot_file(filename, graph);
+
+        if (parse_result == 1) {
+            return 1; // Parsing error
         }
 
         if (stats_flag) {
             print_graph_stats(graph);
-        }
-
-        else if (random_steps > 0) {
+        } else if (random_steps > 0) {
             simulate_random_surfer(graph, random_steps, p);
         }
 
@@ -139,6 +138,5 @@ int main(int argc, char *argv[]) {
     }
 
     return 0;
-
 }
 

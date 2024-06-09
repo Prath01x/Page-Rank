@@ -5,7 +5,7 @@
 #include <limits.h>
 
 
-void parse_dot_file(const char* filename, Graph* graph) {
+int parse_dot_file(const char* filename, Graph* graph) {
     FILE* file = fopen(filename, "r");
     if (!file) {
         perror("Could not open file");
@@ -13,7 +13,9 @@ void parse_dot_file(const char* filename, Graph* graph) {
     }
 
     char line[512];
+    int line_number = 0;
     while (fgets(line, sizeof(line), file)) {
+        line_number++;
         // Extract the graph name from the first line containing "digraph"
         if (strstr(line, "digraph")) {
             sscanf(line, "digraph %s {", graph->name);
@@ -26,24 +28,29 @@ void parse_dot_file(const char* filename, Graph* graph) {
         }
 
         // Skip lines with '{' and '}'
-        if ( strstr(line, "}")) {
+        if (strstr(line, "}")) {
             continue;
         }
 
         char source[MAX_NAME_LENGTH], target[MAX_NAME_LENGTH];
         if (sscanf(line, " %[^-> ] -> %[^; ];", source, target) == 2) {
+            if (strlen(source) > MAX_NAME_LENGTH || strlen(target) > MAX_NAME_LENGTH) {
+                fprintf(stderr, "Error: Identifier exceeds maximum length at line %d\n", line_number);
+                return 1; // Identifier too long
+            }
             Node* src_node = find_or_create_node(graph, source);
             Node* tgt_node = find_or_create_node(graph, target);
             src_node->out_degree++;
             tgt_node->in_degree++;
             graph->num_edges++;
-        }else {
-            fprintf(stderr, "Invalid line format: %s\n", line);
-            exit(EXIT_FAILURE);
+        } else {
+            fprintf(stderr, "Error: Unable to parse line %d\n", line_number);
+            return 1; // Parsing error
         }
     }
 
     fclose(file);
+    return 0; // Successful parsing
 }
 Graph* create_graph() {
     Graph* graph = (Graph*)malloc(sizeof(Graph));
