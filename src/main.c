@@ -12,8 +12,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include "parser.h"
-#include <stdbool.h>
-
+#include <string.h>
 
 void print_usage() {
     printf("Usage: ./pagerank [OPTIONS]... [FILENAME]\n");
@@ -24,13 +23,13 @@ void print_usage() {
     printf("  -s        Compute and print the statistics of the graph as defined in section 3.4\n");
     printf("  -p P      Set the parameter p to P%%. (Default: P = 10)\n");
 }
-void simulate_random_surfer(Graph *graph, int steps, float p) {
+void simulate_random_surfer(Graph *graph, int steps, double p) {
     // Check if the graph has any nodes
     rand_init();
     if (graph == NULL || graph->num_nodes == 0 || steps <= 0 || p < 0.0 || p > 1.0) {
         return;
     }
-    
+
     // Initialize random starting node
     int current_node_index = randu(graph->num_nodes);
     Node *current_node = graph->nodes[current_node_index];
@@ -41,41 +40,32 @@ void simulate_random_surfer(Graph *graph, int steps, float p) {
         return;
     }
 
-    // Array to track visited nodes
-    bool *visited = calloc(graph->num_nodes, sizeof(bool));
-    if (!visited) {
-        free(visit_counts);
-        return;
-    }
-
     // Simulate the random surfer for the specified number of steps
     for (int i = 0; i < steps; i++) {
-        // Mark the current node as visited
-        visited[current_node_index] = true;
-
-        // With probability p%, jump to a random node
-        if (randu(RAND_MAX) / RAND_MAX < p) {
+        // With probability p, jump to a random node
+        if ((double)rand() / RAND_MAX < p || current_node->out_degree == 0) {
             current_node_index = randu(graph->num_nodes);
             current_node = graph->nodes[current_node_index];
-        } else if (current_node->out_degree > 0) {
-            // With probability (100 - p)%, move to a randomly chosen adjacent node
+        } else {
+            // With probability (1 - p), move to a randomly chosen adjacent node
             int random_outgoing_index = randu(current_node->out_degree);
-            Node *next_node = NULL;
-            int edge_count = 0;
-
-            // Find the target node for the random outgoing edge
+            Node *next_node = current_node;
             for (int j = 0; j < graph->num_nodes; j++) {
                 Node *potential_next_node = graph->nodes[j];
                 for (int k = 0; k < potential_next_node->in_degree; k++) {
-                    if (edge_count == random_outgoing_index) {
-                        next_node = potential_next_node;
-                        break;
+                    if (strcmp(potential_next_node->name, current_node->name) == 0) {
+                        if (random_outgoing_index == 0) {
+                            next_node = potential_next_node;
+                            break;
+                        }
+                        random_outgoing_index--;
                     }
-                    edge_count++;
                 }
-                // Check if the potential next node has not been visited
-                if (next_node && !visited[j]) {
-                    current_node = next_node;
+                if (next_node != current_node) break;
+            }
+            current_node = next_node;
+            for (int j = 0; j < graph->num_nodes; j++) {
+                if (graph->nodes[j] == current_node) {
                     current_node_index = j;
                     break;
                 }
@@ -88,12 +78,10 @@ void simulate_random_surfer(Graph *graph, int steps, float p) {
 
     // Output the results
     for (int i = 0; i < graph->num_nodes; i++) {
-        printf("%-12s %.10f\n", graph->nodes[i]->name, (double)visit_counts[i] / steps);
+        printf("%-10s %.10f\n", graph->nodes[i]->name, (double)visit_counts[i] / steps);
     }
 
-    // Free memory
     free(visit_counts);
-    free(visited);
 }
 
 
@@ -103,7 +91,7 @@ int main(int argc, char *argv[]) {
     int random_steps;
     int stats_flag = 0;
     
-    float p = 0.1; 
+    double p = 0.1; 
     char *filename = NULL;
 
     while ((opt = getopt(argc, argv, "hr:sp:")) != -1) {
@@ -118,7 +106,7 @@ int main(int argc, char *argv[]) {
                 stats_flag = 1;
                 break;
             case 'p':
-            p=atoi(optarg)/100.0;
+            p=atof(optarg)/100.0;
                 break;
             default:
                 print_usage();
