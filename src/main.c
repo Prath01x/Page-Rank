@@ -40,7 +40,7 @@ int get_index_by_node(Graph *graph, Node *node) {
 }
 
 void simulate_random_surfer(Graph *graph, int steps, double p) {
-    if (graph == NULL || graph->num_nodes == 0 || steps <= 0 || p < 0.0 || p > 1.0) {
+    if (graph == NULL || graph->num_nodes == 0 || steps <= 0) {
         return;
     }
 
@@ -54,7 +54,6 @@ void simulate_random_surfer(Graph *graph, int steps, double p) {
     // Array to count visits to each node
     int *visit_counts = calloc(graph->num_nodes, sizeof(int));
     if (visit_counts == NULL) {
-        printf("Memory allocation failed.\n");
         return;
     }
 
