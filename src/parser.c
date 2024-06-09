@@ -35,6 +35,7 @@ int parse_dot_file(const char* filename, Graph* graph) {
         char source[MAX_NAME_LENGTH], target[MAX_NAME_LENGTH];
         if (sscanf(line, " %[^-> ] -> %[^; ];", source, target) == 2) {
             if (strlen(source) > MAX_NAME_LENGTH || strlen(target) > MAX_NAME_LENGTH) {
+                fclose(file);
                 return 1; // Identifier too long
             }
             Node* src_node = find_or_create_node(graph, source);
@@ -43,6 +44,7 @@ int parse_dot_file(const char* filename, Graph* graph) {
             tgt_node->in_degree++;
             graph->num_edges++;
         } else {
+            fclose(file);
             return 1; // Parsing error
         }
     }

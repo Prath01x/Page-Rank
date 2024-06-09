@@ -24,30 +24,28 @@ void print_usage() {
     printf("  -p P      Set the parameter p to P%%. (Default: P = 10)\n");
 }
 void simulate_random_surfer(Graph *graph, int steps, double p) {
-    // Check if the graph has any nodes
-    rand_init();
+    
+
     if (graph == NULL || graph->num_nodes == 0 || steps <= 0 || p < 0.0 || p > 1.0) {
         return;
     }
 
-    // Initialize random starting node
+ 
     int current_node_index = randu(graph->num_nodes);
     Node *current_node = graph->nodes[current_node_index];
 
-    // Array to count visits to each node
     int *visit_counts = calloc(graph->num_nodes, sizeof(int));
     if (!visit_counts) {
         return;
     }
 
-    // Simulate the random surfer for the specified number of steps
     for (int i = 0; i < steps; i++) {
-        // With probability p, jump to a random node
+ 
         if ((double)rand() / RAND_MAX < p || current_node->out_degree == 0) {
             current_node_index = randu(graph->num_nodes);
             current_node = graph->nodes[current_node_index];
         } else {
-            // With probability (1 - p), move to a randomly chosen adjacent node
+        
             int random_outgoing_index = randu(current_node->out_degree);
             Node *next_node = current_node;
             for (int j = 0; j < graph->num_nodes; j++) {
@@ -72,11 +70,10 @@ void simulate_random_surfer(Graph *graph, int steps, double p) {
             }
         }
 
-        // Count the visit
+        
         visit_counts[current_node_index]++;
     }
 
-    // Output the results
     for (int i = 0; i < graph->num_nodes; i++) {
         printf("%-10s %.10f\n", graph->nodes[i]->name, (double)visit_counts[i] / steps);
     }
@@ -106,7 +103,7 @@ int main(int argc, char *argv[]) {
                 stats_flag = 1;
                 break;
             case 'p':
-            p=atof(optarg)/100.0;
+            p=atoi(optarg)/100.0;
                 break;
             default:
                 print_usage();
