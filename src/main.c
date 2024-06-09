@@ -123,6 +123,9 @@ int main(int argc, char *argv[]) {
     if (filename) {
         Graph *graph = create_graph();
         parse_dot_file(filename, graph);
+        if(parse_dot_file == 1){
+            return 1;
+        }
 
         if (stats_flag) {
             print_graph_stats(graph);
