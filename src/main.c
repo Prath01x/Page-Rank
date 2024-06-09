@@ -77,7 +77,7 @@ void simulate_random_surfer(Graph *graph, int steps, float p) {
 
     // Output the results
     for (int i = 0; i < graph->num_nodes; i++) {
-        printf("%-12s %.10f\n", graph->nodes[i]->name, (double)visit_counts[i] / steps);
+        printf("%s %.10f\n", graph->nodes[i]->name, (double)visit_counts[i] / steps);
     }
 
     free(visit_counts);
