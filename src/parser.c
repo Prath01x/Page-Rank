@@ -39,7 +39,7 @@ void parse_dot_file(const char* filename, Graph* graph) {
             graph->num_edges++;
         }else {
             fprintf(stderr, "Invalid line format: %s\n", line);
-            
+            exit(EXIT_FAILURE);
         }
     }
 
