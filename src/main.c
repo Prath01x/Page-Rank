@@ -30,47 +30,33 @@ void simulate_random_surfer(Graph *graph, int steps, float p) {
         return;
     }
 
- 
-    int current_node_index = randu(graph->num_nodes);
-    Node *current_node = graph->nodes[current_node_index];
-
     int *visit_counts = calloc(graph->num_nodes, sizeof(int));
     if (!visit_counts) {
         return;
     }
 
+    int current_node_index = randu(graph->num_nodes);
+    Node *current_node = graph->nodes[current_node_index];
+
     for (int i = 0; i < steps; i++) {
- 
-        if (randu(RAND_MAX) / RAND_MAX < p || current_node->out_degree == 0) {
+        if ((float)randu(RAND_MAX) / (float)RAND_MAX < p || current_node->out_degree == 0) {
             current_node_index = randu(graph->num_nodes);
             current_node = graph->nodes[current_node_index];
         } else {
-        
             int random_outgoing_index = randu(current_node->out_degree);
-            Node *next_node = current_node;
+            int count = 0;
             for (int j = 0; j < graph->num_nodes; j++) {
                 Node *potential_next_node = graph->nodes[j];
-                for (int k = 0; k < potential_next_node->in_degree; k++) {
-                    if (strcmp(potential_next_node->name, current_node->name) == 0) {
-                        if (random_outgoing_index == 0) {
-                            next_node = potential_next_node;
-                            break;
-                        }
-                        random_outgoing_index--;
+                if (strcmp(potential_next_node->name, current_node->name) != 0) {
+                    count += potential_next_node->in_degree;
+                    if (count > random_outgoing_index) {
+                        current_node = potential_next_node;
+                        current_node_index = j;
+                        break;
                     }
-                }
-                if (next_node != current_node) break;
-            }
-            current_node = next_node;
-            for (int j = 0; j < graph->num_nodes; j++) {
-                if (graph->nodes[j] == current_node) {
-                    current_node_index = j;
-                    break;
                 }
             }
         }
-
-        
         visit_counts[current_node_index]++;
     }
 
@@ -81,17 +67,16 @@ void simulate_random_surfer(Graph *graph, int steps, float p) {
     free(visit_counts);
 }
 
-
 int main(int argc, char *argv[]) {
     
     int opt;
     int random_steps;
     int stats_flag = 0;
     
-    float p = 0.1; 
+    float p = 0.10; 
     char *filename = NULL;
 
-    while ((opt = getopt(argc, argv, "hr:msp:")) != -1) {
+    while ((opt = getopt(argc, argv, "hr:sp:")) != -1) {
         switch (opt) {
             case 'h':
                 print_usage();
@@ -121,7 +106,7 @@ int main(int argc, char *argv[]) {
     if (filename) {
         Graph *graph = create_graph();
        int x= parse_dot_file(filename, graph);
-       if ( x==1){
+       if (x==1){
         free_graph(graph);
         return 1;
        }
@@ -139,4 +124,3 @@ int main(int argc, char *argv[]) {
     return 0;
 
 }
-
