@@ -1,7 +1,7 @@
 #ifndef PARSER_H
 #define PARSER_H
-#define MAX_NODES 256
-#define MAX_NAME_LENGTH 256
+#define MAX_NODES 200000
+#define MAX_NAME_LENGTH 257
 
 typedef struct Node {
     char name[MAX_NAME_LENGTH];

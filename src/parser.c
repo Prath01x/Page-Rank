@@ -9,11 +9,14 @@ int parse_dot_file(const char* filename, Graph* graph) {
     FILE* file = fopen(filename, "r");
     if (!file) {
         perror("Could not open file");
-        exit(EXIT_FAILURE);
+        return 1;
     }
 
-    char line[512];
+    char line[518];
     int line_number = 0;
+    int has_opening_bracket = 0;
+    int has_closing_bracket = 0;
+
     while (fgets(line, sizeof(line), file)) {
         line_number++;
         // Extract the graph name from the first line containing "digraph"
@@ -24,34 +27,59 @@ int parse_dot_file(const char* filename, Graph* graph) {
             if (pos) {
                 *pos = '\0';
             }
+            has_opening_bracket = 1;
             continue;
         }
 
-        // Skip lines with '{' and '}'
+        // Check for opening and closing braces
+        if (strstr(line, "{")) {
+            has_opening_bracket = 1;
+            continue;
+        }
+
         if (strstr(line, "}")) {
+            has_closing_bracket = 1;
             continue;
         }
 
-        char source[MAX_NAME_LENGTH], target[MAX_NAME_LENGTH];
-        if (sscanf(line, " %[^-> ] -> %[^; ];", source, target) == 2) {
-            if (strlen(source) > MAX_NAME_LENGTH || strlen(target) > MAX_NAME_LENGTH) {
+        // Ensure lines with '->' contain a semicolon
+        if (strstr(line, "->")) {
+            if (!strstr(line, ";")) {
+                
                 fclose(file);
-                return 1; // Identifier too long
+                return 1; // Missing semicolon
             }
-            Node* src_node = find_or_create_node(graph, source);
-            Node* tgt_node = find_or_create_node(graph, target);
-            src_node->out_degree++;
-            tgt_node->in_degree++;
-            graph->num_edges++;
-        } else {
-            fclose(file);
-            return 1; // Parsing error
+
+            char source[MAX_NAME_LENGTH], target[MAX_NAME_LENGTH];
+            if (sscanf(line, " %[^-> ] -> %[^; ];", source, target) == 2) {
+                if (strlen(source) > MAX_NAME_LENGTH|| strlen(target) > MAX_NAME_LENGTH) {
+                
+                    fclose(file);
+                    return 1; // Identifier too long
+                }
+                Node* src_node = find_or_create_node(graph, source);
+                Node* tgt_node = find_or_create_node(graph, target);
+                src_node->out_degree++;
+                tgt_node->in_degree++;
+                graph->num_edges++;
+            } else {
+                fclose(file);
+                return 1; // Parsing error
+            }
         }
     }
 
     fclose(file);
+
+    // Check if the graph has both opening and closing brackets
+    if (!has_opening_bracket || !has_closing_bracket) {
+       
+        return 1; // Missing opening or closing bracket
+    }
+
     return 0; // Successful parsing
 }
+
 Graph* create_graph() {
     Graph* graph = (Graph*)malloc(sizeof(Graph));
     graph->num_nodes = 0;

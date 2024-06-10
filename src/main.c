@@ -115,13 +115,16 @@ int main(int argc, char *argv[]) {
         filename = argv[optind];
     } else if (!stats_flag) {
         print_usage();
-        return 1;
+        return 0;
     }
 
     if (filename) {
         Graph *graph = create_graph();
-        parse_dot_file(filename, graph);
-
+       int x= parse_dot_file(filename, graph);
+       if ( x==1){
+        free_graph(graph);
+        return 1;
+       }
         if (stats_flag) {
             print_graph_stats(graph);
         }
