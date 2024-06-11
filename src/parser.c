@@ -8,21 +8,16 @@
 int parse_dot_file(const char* filename, Graph* graph) {
     FILE* file = fopen(filename, "r");
     if (!file) {
-        perror("Could not open file");
         return 1;
     }
 
     char line[518];
-    int line_number = 0;
     int has_opening_bracket = 0;
     int has_closing_bracket = 0;
 
     while (fgets(line, sizeof(line), file)) {
-        line_number++;
-        // Extract the graph name from the first line containing "digraph"
         if (strstr(line, "digraph")) {
             sscanf(line, "digraph %s {", graph->name);
-            // Remove any trailing '{' or whitespace from the name
             char* pos = strchr(graph->name, '{');
             if (pos) {
                 *pos = '\0';
@@ -30,8 +25,7 @@ int parse_dot_file(const char* filename, Graph* graph) {
             has_opening_bracket = 1;
             continue;
         }
-
-        // Check for opening and closing braces
+    
         if (strstr(line, "{")) {
             has_opening_bracket = 1;
             continue;
@@ -42,42 +36,42 @@ int parse_dot_file(const char* filename, Graph* graph) {
             continue;
         }
 
-        // Ensure lines with '->' contain a semicolon
         if (strstr(line, "->")) {
             if (!strstr(line, ";")) {
-                
                 fclose(file);
-                return 1; // Missing semicolon
+                return 1;
             }
 
             char source[MAX_NAME_LENGTH], target[MAX_NAME_LENGTH];
             if (sscanf(line, " %[^-> ] -> %[^; ];", source, target) == 2) {
-                if (strlen(source) > MAX_NAME_LENGTH|| strlen(target) > MAX_NAME_LENGTH) {
-                
+                if (strlen(source) > MAX_NAME_LENGTH || strlen(target) > MAX_NAME_LENGTH) {
                     fclose(file);
-                    return 1; // Identifier too long
+                    return 1;
                 }
                 Node* src_node = find_or_create_node(graph, source);
                 Node* tgt_node = find_or_create_node(graph, target);
                 src_node->out_degree++;
                 tgt_node->in_degree++;
                 graph->num_edges++;
+
+                Edge* new_edge = (Edge*)malloc(sizeof(Edge));
+                new_edge->target = tgt_node;
+                new_edge->next = src_node->edges;
+                src_node->edges = new_edge;
             } else {
                 fclose(file);
-                return 1; // Parsing error
+                return 1;
             }
         }
     }
 
     fclose(file);
 
-    // Check if the graph has both opening and closing brackets
     if (!has_opening_bracket || !has_closing_bracket) {
-       
-        return 1; // Missing opening or closing bracket
+        return 1;
     }
 
-    return 0; // Successful parsing
+    return 0;
 }
 
 Graph* create_graph() {
@@ -96,6 +90,7 @@ Node* create_node(const char* name) {
     node->in_degree = 0;
     node->out_degree = 0;
     node->next = NULL;
+    node ->edges=NULL;
     return node;
 }
 

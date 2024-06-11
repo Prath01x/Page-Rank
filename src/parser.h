@@ -3,12 +3,21 @@
 #define MAX_NODES 200000
 #define MAX_NAME_LENGTH 257
 
-typedef struct Node {
+typedef struct Node Node;
+typedef struct Edge Edge;
+
+ struct Node {
     char name[MAX_NAME_LENGTH];
     int in_degree;
     int out_degree;
     struct Node* next;
-} Node;
+    struct Edge* edges;
+};
+ struct Edge{
+   Node* target;
+   Edge* next;
+};
+
 
 typedef struct Graph {
     char name[MAX_NAME_LENGTH];
